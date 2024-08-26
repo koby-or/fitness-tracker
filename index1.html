@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אפליקציית מעקב כושר</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #app {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        input {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>אפליקציית מעקב כושר</h1>
+        <div>
+            <h2>הוסף אימון</h2>
+            <select id="exerciseSelect"></select>
+            <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
+            <input type="number" id="repsInput" placeholder="מספר חזרות">
+            <button onclick="addWorkoutFromUI()">הוסף אימון</button>
+        </div>
+        <div>
+            <h2>התקדמות</h2>
+            <select id="progressSelect"></select>
+            <button onclick="showProgress()">הצג התקדמות</button>
+        </div>
+        <div>
+            <h2>שיאים אישיים</h2>
+            <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
+        </div>
+        <div id="output"></div>
+    </div>
+
+    <script>
+    // הקוד שלך כאן
+    // מודל נתונים
+    const exerciseCategories = ['כוח עליון', 'כוח תחתון', 'ליבה', 'אירובי'];
+
+    class Exercise {
+        constructor(name, category) {
+            this.name = name;
+            this.category = category;
+            this.personalBest = 0;
+            this.history = [];
+        }
+
+        addWorkout(weight, reps) {
+            const date = new Date().toISOString().split('T')[0];
+            this.history.push({ date, weight, reps });
+            if (weight > this.personalBest) {
+                this.personalBest = weight;
+            }
+        }
+    }
+
+    class User {
+        constructor(name, age, weight, targetWeight) {
+            this.name = name;
+            this.age = age;
+            this.weight = weight;
+            this.targetWeight = targetWeight;
+            this.exercises = [];
+        }
+
+        addExercise(exercise) {
+            this.exercises.push(exercise);
+        }
+
+        updateWeight(newWeight) {
+            this.weight = newWeight;
+        }
+    }
+
+    // יצירת משתמש
+    const user = new User('משתמש', 50, 74, 62);
+
+    // הוספת תרגילים לדוגמה
+    const pushups = new Exercise('שכיבות סמיכה', 'כוח עליון');
+    const squats = new Exercise('סקוואטים', 'כוח תחתון');
+    const plank = new Exercise('פלאנק', 'ליבה');
+    const running = new Exercise('ריצה', 'אירובי');
+
+    user.addExercise(pushups);
+    user.addExercise(squats);
+    user.addExercise(plank);
+    user.addExercise(running);
+
+    // פונקציות עזר
+    function addWorkout(exerciseName, weight, reps) {
+        const exercise = user.exercises.find(e => e.name === exerciseName);
+        if (exercise) {
+            exercise.addWorkout(weight, reps);
+            return `אימון נוסף ל${exerciseName}: ${weight} ק"ג, ${reps} חזרות`;
+        } else {
+            return `התרגיל ${exerciseName} לא נמצא`;
+        }
+    }
+
+    function getProgressChart(exerciseName) {
+        const exercise = user.exercises.find(e => e.name === exerciseName);
+        if (exercise) {
+            let output = `גרף התקדמות עבור ${exerciseName}:\n`;
+            exercise.history.forEach(workout => {
+                output += `${workout.date}: ${workout.weight} ק"ג, ${workout.reps} חזרות\n`;
+            });
+            return output;
+        } else {
+            return `התרגיל ${exerciseName} לא נמצא`;
+        }
+    }
+
+    function getPersonalBests() {
+        let output = 'שיאים אישיים:\n';
+        user.exercises.forEach(exercise => {
+            output += `${exercise.name}: ${exercise.personalBest} ק"ג\n`;
+        });
+        return output;
+    }
+
+    // פונקציות ממשק משתמש
+    function addWorkoutFromUI() {
+        const exercise = document.getElementById('exerciseSelect').value;
+        const weight = document.getElementById('weightInput').value;
+        const reps = document.getElementById('repsInput').value;
+        const result = addWorkout(exercise, Number(weight), Number(reps));
+        document.getElementById('output').innerText = result;
+    }
+
+    function showProgress() {
+        const exercise = document.getElementById('progressSelect').value;
+        const result = getProgressChart(exercise);
+        document.getElementById('output').innerText = result;
+    }
+
+    function showPersonalBests() {
+        const result = getPersonalBests();
+        document.getElementById('output').innerText = result;
+    }
+
+    // אתחול הדף
+    window.onload = function() {
+        const exerciseSelect = document.getElementById('exerciseSelect');
+        const progressSelect = document.getElementById('progressSelect');
+        user.exercises.forEach(exercise => {
+            exerciseSelect.add(new Option(exercise.name, exercise.name));
+            progressSelect.add(new Option(exercise.name, exercise.name));
+        });
+    }
+    </script>
+</body>
+</html>
