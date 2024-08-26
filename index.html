@@ -6,75 +6,127 @@
     <title>אפליקציית מעקב כושר מתקדמת</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #f0f8ff;
+            color: #333;
         }
         .container {
             max-width: 800px;
             margin: auto;
             background: white;
             padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
-        h1, h2 {
-            color: #333;
+        h1 {
+            color: #4a4a4a;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
         }
         .section {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 5px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .section:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
         }
         button {
-            background-color: #4CAF50;
+            background-color: #3498db;
             border: none;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 24px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
             margin: 4px 2px;
             cursor: pointer;
-            border-radius: 5px;
+            border-radius: 50px;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #2980b9;
         }
         input, select {
-            padding: 8px;
-            margin: 5px 0;
+            padding: 10px;
+            margin: 10px 0;
             border-radius: 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #bdc3c7;
             width: 100%;
             box-sizing: border-box;
+            font-size: 16px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
             text-align: right;
         }
         th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
             background-color: #f2f2f2;
+        }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 200px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>אפליקציית מעקב כושר מתקדמת</h1>
+        <h1>🏋️‍♂️ אפליקציית מעקב כושר מתקדמת 🏃‍♀️</h1>
         
-        <div class="section">
+        <div class="section tooltip">
+            <span class="tooltiptext">כאן תוכל לראות ולעדכן את פרטיך האישיים</span>
             <h2>פרטי משתמש</h2>
             <p id="userDetails"></p>
             <button onclick="updateWeight()">עדכן משקל נוכחי</button>
         </div>
 
-        <div class="section">
+        <div class="section tooltip">
+            <span class="tooltiptext">הוסף אימון חדש לרשימת האימונים שלך</span>
             <h2>הוסף אימון חדש</h2>
             <select id="exerciseSelect"></select>
             <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
@@ -82,20 +134,23 @@
             <button onclick="addWorkoutFromUI()">הוסף אימון</button>
         </div>
 
-        <div class="section">
+        <div class="section tooltip">
+            <span class="tooltiptext">צפה בהיסטוריית האימונים שלך לכל תרגיל</span>
             <h2>היסטוריית אימונים</h2>
             <select id="historySelect"></select>
             <button onclick="showHistory()">הצג היסטוריה</button>
             <div id="historyOutput"></div>
         </div>
 
-        <div class="section">
+        <div class="section tooltip">
+            <span class="tooltiptext">ראה את השיאים האישיים שלך בכל תרגיל</span>
             <h2>שיאים אישיים</h2>
             <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
             <div id="personalBestsOutput"></div>
         </div>
 
-        <div class="section">
+        <div class="section tooltip">
+            <span class="tooltiptext">קבל סטטיסטיקות כלליות על האימונים שלך</span>
             <h2>סטטיסטיקות</h2>
             <button onclick="showStats()">הצג סטטיסטיקות</button>
             <div id="statsOutput"></div>
@@ -155,10 +210,10 @@
     function updateUserDetails() {
         const details = document.getElementById('userDetails');
         details.innerHTML = `
-            שם: ${user.name}<br>
-            גיל: ${user.age}<br>
-            משקל נוכחי: ${user.weight} ק"ג<br>
-            משקל יעד: ${user.targetWeight} ק"ג
+            <strong>שם:</strong> ${user.name}<br>
+            <strong>גיל:</strong> ${user.age}<br>
+            <strong>משקל נוכחי:</strong> ${user.weight} ק"ג<br>
+            <strong>משקל יעד:</strong> ${user.targetWeight} ק"ג
         `;
     }
 
@@ -222,17 +277,23 @@
     function showStats() {
         const output = document.getElementById('statsOutput');
         let statsHTML = '<h3>סטטיסטיקות כלליות</h3>';
-        statsHTML += `<p>סך הכל אימונים: ${user.exercises.reduce((total, exercise) => total + exercise.history.length, 0)}</p>`;
+        const totalWorkouts = user.exercises.reduce((total, exercise) => total + exercise.history.length, 0);
+        statsHTML += `<p><strong>סך הכל אימונים:</strong> ${totalWorkouts}</p>`;
         
         let mostFrequentExercise = user.exercises.reduce((prev, current) => 
             (prev.history.length > current.history.length) ? prev : current
         );
-        statsHTML += `<p>תרגיל הכי תדיר: ${mostFrequentExercise.name} (${mostFrequentExercise.history.length} אימונים)</p>`;
+        statsHTML += `<p><strong>תרגיל הכי תדיר:</strong> ${mostFrequentExercise.name} (${mostFrequentExercise.history.length} אימונים)</p>`;
         
         let totalWeight = user.exercises.reduce((total, exercise) => 
             total + exercise.history.reduce((sum, workout) => sum + workout.weight, 0), 0
         );
-        statsHTML += `<p>סך הכל משקל שהורם: ${totalWeight} ק"ג</p>`;
+        statsHTML += `<p><strong>סך הכל משקל שהורם:</strong> ${totalWeight} ק"ג</p>`;
+
+        if (totalWorkouts > 0) {
+            const averageWeightPerWorkout = (totalWeight / totalWorkouts).toFixed(2);
+            statsHTML += `<p><strong>ממוצע משקל לאימון:</strong> ${averageWeightPerWorkout} ק"ג</p>`;
+        }
 
         output.innerHTML = statsHTML;
     }
