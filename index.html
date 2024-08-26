@@ -9,14 +9,22 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f8ff;
+            padding: 0;
+            background-image: url('pic.app.jpg'); /* שם הקובץ של התמונה שלך */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: #333;
+        }
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.8);
+            min-height: 100vh;
+            padding: 20px;
         }
         .container {
             max-width: 800px;
             margin: auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
@@ -36,7 +44,7 @@
         .section {
             margin-bottom: 30px;
             padding: 20px;
-            background: #ecf0f1;
+            background: rgba(236, 240, 241, 0.8);
             border-radius: 10px;
             transition: all 0.3s ease;
         }
@@ -74,6 +82,7 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            background-color: rgba(255, 255, 255, 0.8);
         }
         th, td {
             border: 1px solid #ddd;
@@ -85,7 +94,7 @@
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: rgba(242, 242, 242, 0.8);
         }
         .tooltip {
             position: relative;
@@ -95,7 +104,7 @@
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 200px;
-            background-color: #555;
+            background-color: rgba(85, 85, 85, 0.9);
             color: #fff;
             text-align: center;
             border-radius: 6px;
@@ -115,47 +124,47 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏋️‍♂️ אפליקציית מעקב כושר מתקדמת 🏃‍♀️</h1>
+    <div class="overlay">
+        <div class="container">
+            <h1>🏋️‍♂️ אפליקציית מעקב כושר מתקדמת 🏃‍♀️</h1>
+            
+            <div class="section tooltip">
+                <span class="tooltiptext">כאן תוכל לראות ולעדכן את פרטיך האישיים</span>
+                <h2>פרטי משתמש</h2>
+                <p id="userDetails"></p>
+                <button onclick="updateWeight()">עדכן משקל נוכחי</button>
+            </div>
 
-<img src="pic.app.jpg" alt="תמונת כושר" class="header-image">
-        
-        <div class="section tooltip">
-            <span class="tooltiptext">כאן תוכל לראות ולעדכן את פרטיך האישיים</span>
-            <h2>פרטי משתמש</h2>
-            <p id="userDetails"></p>
-            <button onclick="updateWeight()">עדכן משקל נוכחי</button>
-        </div>
+            <div class="section tooltip">
+                <span class="tooltiptext">הוסף אימון חדש לרשימת האימונים שלך</span>
+                <h2>הוסף אימון חדש</h2>
+                <select id="exerciseSelect"></select>
+                <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
+                <input type="number" id="repsInput" placeholder="מספר חזרות">
+                <button onclick="addWorkoutFromUI()">הוסף אימון</button>
+            </div>
 
-        <div class="section tooltip">
-            <span class="tooltiptext">הוסף אימון חדש לרשימת האימונים שלך</span>
-            <h2>הוסף אימון חדש</h2>
-            <select id="exerciseSelect"></select>
-            <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
-            <input type="number" id="repsInput" placeholder="מספר חזרות">
-            <button onclick="addWorkoutFromUI()">הוסף אימון</button>
-        </div>
+            <div class="section tooltip">
+                <span class="tooltiptext">צפה בהיסטוריית האימונים שלך לכל תרגיל</span>
+                <h2>היסטוריית אימונים</h2>
+                <select id="historySelect"></select>
+                <button onclick="showHistory()">הצג היסטוריה</button>
+                <div id="historyOutput"></div>
+            </div>
 
-        <div class="section tooltip">
-            <span class="tooltiptext">צפה בהיסטוריית האימונים שלך לכל תרגיל</span>
-            <h2>היסטוריית אימונים</h2>
-            <select id="historySelect"></select>
-            <button onclick="showHistory()">הצג היסטוריה</button>
-            <div id="historyOutput"></div>
-        </div>
+            <div class="section tooltip">
+                <span class="tooltiptext">ראה את השיאים האישיים שלך בכל תרגיל</span>
+                <h2>שיאים אישיים</h2>
+                <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
+                <div id="personalBestsOutput"></div>
+            </div>
 
-        <div class="section tooltip">
-            <span class="tooltiptext">ראה את השיאים האישיים שלך בכל תרגיל</span>
-            <h2>שיאים אישיים</h2>
-            <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
-            <div id="personalBestsOutput"></div>
-        </div>
-
-        <div class="section tooltip">
-            <span class="tooltiptext">קבל סטטיסטיקות כלליות על האימונים שלך</span>
-            <h2>סטטיסטיקות</h2>
-            <button onclick="showStats()">הצג סטטיסטיקות</button>
-            <div id="statsOutput"></div>
+            <div class="section tooltip">
+                <span class="tooltiptext">קבל סטטיסטיקות כלליות על האימונים שלך</span>
+                <h2>סטטיסטיקות</h2>
+                <button onclick="showStats()">הצג סטטיסטיקות</button>
+                <div id="statsOutput"></div>
+            </div>
         </div>
     </div>
 
@@ -312,3 +321,4 @@
     </script>
 </body>
 </html>
+Last edited just now
