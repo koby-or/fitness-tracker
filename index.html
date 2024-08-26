@@ -151,9 +151,6 @@
             display: none;
             margin-top: 15px;
         }
-        .section-content.active {
-            display: block;
-        }
     </style>
 </head>
 <body>
@@ -346,4 +343,4 @@
 
         if (totalWorkouts > 0) {
             const averageWeightPerWorkout = (totalWeight / totalWorkouts).toFixed(2);
-            statsHTML += `<p><strong>ממוצע משקל לאימון
+            statsHTML += `<p><strong>ממוצע משקל לאימון:</strong> ${averageWeightPerWorkout} ק"ג
