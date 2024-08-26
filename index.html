@@ -3,57 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אפליקציית מעקב כושר מתקדמת</title>
+    <title>FitTrack Pro - אפליקציית מעקב כושר מתקדמת</title>
     <style>
+        :root {
+            --primary-color: #FF4500;
+            --secondary-color: #1E90FF;
+            --background-color: #F8F8F8;
+            --text-color: #333333;
+            --accent-color: #32CD32;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 0;
-            background-image: url('pic.app.jpg'); /* שם הקובץ של התמונה שלך */
+            background-image: url('pic.app.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            color: #333;
+            color: var(--text-color);
         }
         .overlay {
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgba(255, 255, 255, 0.9);
             min-height: 100vh;
             padding: 20px;
         }
         .container {
             max-width: 800px;
             margin: auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
+            background: var(--background-color);
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
         h1 {
-            color: #4a4a4a;
+            color: var(--primary-color);
             text-align: center;
             margin-bottom: 30px;
-            font-size: 2.5em;
+            font-size: 2.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
         h2 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
+            color: var(--secondary-color);
+            border-bottom: 3px solid var(--primary-color);
             padding-bottom: 10px;
             margin-top: 30px;
+            font-size: 1.8em;
         }
         .section {
             margin-bottom: 30px;
             padding: 20px;
-            background: rgba(236, 240, 241, 0.8);
+            background: white;
             border-radius: 10px;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         .section:hover {
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
             transform: translateY(-5px);
         }
         button {
-            background-color: #3498db;
+            background-color: var(--accent-color);
             border: none;
             color: white;
             padding: 12px 24px;
@@ -64,25 +75,33 @@
             margin: 4px 2px;
             cursor: pointer;
             border-radius: 50px;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-weight: bold;
         }
         button:hover {
-            background-color: #2980b9;
+            background-color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         input, select {
-            padding: 10px;
+            padding: 12px;
             margin: 10px 0;
             border-radius: 5px;
-            border: 1px solid #bdc3c7;
+            border: 1px solid #ddd;
             width: 100%;
             box-sizing: border-box;
             font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 5px rgba(30, 144, 255, 0.5);
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: white;
         }
         th, td {
             border: 1px solid #ddd;
@@ -90,11 +109,12 @@
             text-align: right;
         }
         th {
-            background-color: #3498db;
+            background-color: var(--secondary-color);
             color: white;
+            text-transform: uppercase;
         }
         tr:nth-child(even) {
-            background-color: rgba(242, 242, 242, 0.8);
+            background-color: #f2f2f2;
         }
         .tooltip {
             position: relative;
@@ -104,11 +124,11 @@
         .tooltip .tooltiptext {
             visibility: hidden;
             width: 200px;
-            background-color: rgba(85, 85, 85, 0.9);
-            color: #fff;
+            background-color: var(--primary-color);
+            color: white;
             text-align: center;
             border-radius: 6px;
-            padding: 5px;
+            padding: 10px;
             position: absolute;
             z-index: 1;
             bottom: 125%;
@@ -116,54 +136,72 @@
             margin-left: -100px;
             opacity: 0;
             transition: opacity 0.3s;
+            font-size: 14px;
         }
         .tooltip:hover .tooltiptext {
             visibility: visible;
             opacity: 1;
+        }
+        .section-content {
+            display: none;
+            margin-top: 15px;
+        }
+        .section-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
     <div class="overlay">
         <div class="container">
-            <h1>🏋️‍♂️ אפליקציית מעקב כושר מתקדמת 🏃‍♀️</h1>
+            <h1>FitTrack Pro</h1>
             
             <div class="section tooltip">
                 <span class="tooltiptext">כאן תוכל לראות ולעדכן את פרטיך האישיים</span>
-                <h2>פרטי משתמש</h2>
-                <p id="userDetails"></p>
-                <button onclick="updateWeight()">עדכן משקל נוכחי</button>
+                <h2 onclick="toggleSection('userDetails')">פרטי משתמש</h2>
+                <div id="userDetailsContent" class="section-content">
+                    <p id="userDetails"></p>
+                    <button onclick="updateWeight()">עדכן משקל נוכחי</button>
+                </div>
             </div>
 
             <div class="section tooltip">
                 <span class="tooltiptext">הוסף אימון חדש לרשימת האימונים שלך</span>
-                <h2>הוסף אימון חדש</h2>
-                <select id="exerciseSelect"></select>
-                <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
-                <input type="number" id="repsInput" placeholder="מספר חזרות">
-                <button onclick="addWorkoutFromUI()">הוסף אימון</button>
+                <h2 onclick="toggleSection('addWorkout')">הוסף אימון חדש</h2>
+                <div id="addWorkoutContent" class="section-content">
+                    <select id="exerciseSelect"></select>
+                    <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
+                    <input type="number" id="repsInput" placeholder="מספר חזרות">
+                    <button onclick="addWorkoutFromUI()">הוסף אימון</button>
+                </div>
             </div>
 
             <div class="section tooltip">
                 <span class="tooltiptext">צפה בהיסטוריית האימונים שלך לכל תרגיל</span>
-                <h2>היסטוריית אימונים</h2>
-                <select id="historySelect"></select>
-                <button onclick="showHistory()">הצג היסטוריה</button>
-                <div id="historyOutput"></div>
+                <h2 onclick="toggleSection('workoutHistory')">היסטוריית אימונים</h2>
+                <div id="workoutHistoryContent" class="section-content">
+                    <select id="historySelect"></select>
+                    <button onclick="showHistory()">הצג היסטוריה</button>
+                    <div id="historyOutput"></div>
+                </div>
             </div>
 
             <div class="section tooltip">
                 <span class="tooltiptext">ראה את השיאים האישיים שלך בכל תרגיל</span>
-                <h2>שיאים אישיים</h2>
-                <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
-                <div id="personalBestsOutput"></div>
+                <h2 onclick="toggleSection('personalBests')">שיאים אישיים</h2>
+                <div id="personalBestsContent" class="section-content">
+                    <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
+                    <div id="personalBestsOutput"></div>
+                </div>
             </div>
 
             <div class="section tooltip">
                 <span class="tooltiptext">קבל סטטיסטיקות כלליות על האימונים שלך</span>
-                <h2>סטטיסטיקות</h2>
-                <button onclick="showStats()">הצג סטטיסטיקות</button>
-                <div id="statsOutput"></div>
+                <h2 onclick="toggleSection('statistics')">סטטיסטיקות</h2>
+                <div id="statisticsContent" class="section-content">
+                    <button onclick="showStats()">הצג סטטיסטיקות</button>
+                    <div id="statsOutput"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -309,16 +347,5 @@
         output.innerHTML = statsHTML;
     }
 
-    window.onload = function() {
-        const exerciseSelect = document.getElementById('exerciseSelect');
-        const historySelect = document.getElementById('historySelect');
-        user.exercises.forEach(exercise => {
-            exerciseSelect.add(new Option(exercise.name, exercise.name));
-            historySelect.add(new Option(exercise.name, exercise.name));
-        });
-        updateUserDetails();
-    }
-    </script>
-</body>
-</html>
-Last edited just now
+    function toggleSection(sectionId) {
+        const content = document.getElementByI
