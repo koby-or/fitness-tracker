@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>אפליקציית מעקב כושר</title>
+    <title>אפליקציית מעקב כושר מתקדמת</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,14 +12,22 @@
             padding: 20px;
             background-color: #f4f4f4;
         }
-        h1 {
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
             color: #333;
         }
-        #app {
-            background-color: white;
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f9f9f9;
             border-radius: 5px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
         button {
             background-color: #4CAF50;
@@ -34,41 +42,67 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        input {
-            padding: 10px;
+        input, select {
+            padding: 8px;
             margin: 5px 0;
             border-radius: 5px;
             border: 1px solid #ddd;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: right;
+        }
+        th {
+            background-color: #f2f2f2;
         }
     </style>
 </head>
 <body>
-    <div id="app">
-        <h1>אפליקציית מעקב כושר</h1>
-        <div>
-            <h2>הוסף אימון</h2>
+    <div class="container">
+        <h1>אפליקציית מעקב כושר מתקדמת</h1>
+        
+        <div class="section">
+            <h2>פרטי משתמש</h2>
+            <p id="userDetails"></p>
+            <button onclick="updateWeight()">עדכן משקל נוכחי</button>
+        </div>
+
+        <div class="section">
+            <h2>הוסף אימון חדש</h2>
             <select id="exerciseSelect"></select>
             <input type="number" id="weightInput" placeholder="משקל (ק&quot;ג)">
             <input type="number" id="repsInput" placeholder="מספר חזרות">
             <button onclick="addWorkoutFromUI()">הוסף אימון</button>
         </div>
-        <div>
-            <h2>התקדמות</h2>
-            <select id="progressSelect"></select>
-            <button onclick="showProgress()">הצג התקדמות</button>
+
+        <div class="section">
+            <h2>היסטוריית אימונים</h2>
+            <select id="historySelect"></select>
+            <button onclick="showHistory()">הצג היסטוריה</button>
+            <div id="historyOutput"></div>
         </div>
-        <div>
+
+        <div class="section">
             <h2>שיאים אישיים</h2>
             <button onclick="showPersonalBests()">הצג שיאים אישיים</button>
+            <div id="personalBestsOutput"></div>
         </div>
-        <div id="output"></div>
+
+        <div class="section">
+            <h2>סטטיסטיקות</h2>
+            <button onclick="showStats()">הצג סטטיסטיקות</button>
+            <div id="statsOutput"></div>
+        </div>
     </div>
 
     <script>
-    // הקוד שלך כאן
-    // מודל נתונים
-    const exerciseCategories = ['כוח עליון', 'כוח תחתון', 'ליבה', 'אירובי'];
-
     class Exercise {
         constructor(name, category) {
             this.name = name;
@@ -104,80 +138,113 @@
         }
     }
 
-    // יצירת משתמש
     const user = new User('משתמש', 50, 74, 62);
+    const exerciseList = [
+        new Exercise('שכיבות סמיכה', 'כוח עליון'),
+        new Exercise('סקוואטים', 'כוח תחתון'),
+        new Exercise('פלאנק', 'ליבה'),
+        new Exercise('ריצה', 'אירובי'),
+        new Exercise('מתח', 'כוח עליון'),
+        new Exercise('לחיצת חזה', 'כוח עליון'),
+        new Exercise('הרמת משקל מת', 'כוח תחתון'),
+        new Exercise('כפיפות בטן', 'ליבה')
+    ];
 
-    // הוספת תרגילים לדוגמה
-    const pushups = new Exercise('שכיבות סמיכה', 'כוח עליון');
-    const squats = new Exercise('סקוואטים', 'כוח תחתון');
-    const plank = new Exercise('פלאנק', 'ליבה');
-    const running = new Exercise('ריצה', 'אירובי');
+    exerciseList.forEach(exercise => user.addExercise(exercise));
 
-    user.addExercise(pushups);
-    user.addExercise(squats);
-    user.addExercise(plank);
-    user.addExercise(running);
+    function updateUserDetails() {
+        const details = document.getElementById('userDetails');
+        details.innerHTML = `
+            שם: ${user.name}<br>
+            גיל: ${user.age}<br>
+            משקל נוכחי: ${user.weight} ק"ג<br>
+            משקל יעד: ${user.targetWeight} ק"ג
+        `;
+    }
 
-    // פונקציות עזר
-    function addWorkout(exerciseName, weight, reps) {
-        const exercise = user.exercises.find(e => e.name === exerciseName);
-        if (exercise) {
-            exercise.addWorkout(weight, reps);
-            return `אימון נוסף ל${exerciseName}: ${weight} ק"ג, ${reps} חזרות`;
+    function updateWeight() {
+        const newWeight = prompt('הכנס משקל נוכחי חדש (בק"ג):');
+        if (newWeight && !isNaN(newWeight)) {
+            user.updateWeight(Number(newWeight));
+            updateUserDetails();
+            alert('המשקל עודכן בהצלחה!');
         } else {
-            return `התרגיל ${exerciseName} לא נמצא`;
+            alert('אנא הכנס מספר תקין.');
         }
     }
 
-    function getProgressChart(exerciseName) {
-        const exercise = user.exercises.find(e => e.name === exerciseName);
-        if (exercise) {
-            let output = `גרף התקדמות עבור ${exerciseName}:\n`;
-            exercise.history.forEach(workout => {
-                output += `${workout.date}: ${workout.weight} ק"ג, ${workout.reps} חזרות\n`;
-            });
-            return output;
-        } else {
-            return `התרגיל ${exerciseName} לא נמצא`;
-        }
-    }
-
-    function getPersonalBests() {
-        let output = 'שיאים אישיים:\n';
-        user.exercises.forEach(exercise => {
-            output += `${exercise.name}: ${exercise.personalBest} ק"ג\n`;
-        });
-        return output;
-    }
-
-    // פונקציות ממשק משתמש
     function addWorkoutFromUI() {
         const exercise = document.getElementById('exerciseSelect').value;
         const weight = document.getElementById('weightInput').value;
         const reps = document.getElementById('repsInput').value;
-        const result = addWorkout(exercise, Number(weight), Number(reps));
-        document.getElementById('output').innerText = result;
+        
+        if (!weight || !reps) {
+            alert('אנא מלא את כל השדות.');
+            return;
+        }
+
+        const selectedExercise = user.exercises.find(e => e.name === exercise);
+        if (selectedExercise) {
+            selectedExercise.addWorkout(Number(weight), Number(reps));
+            alert(`אימון נוסף ל${exercise}: ${weight} ק"ג, ${reps} חזרות`);
+            document.getElementById('weightInput').value = '';
+            document.getElementById('repsInput').value = '';
+        }
     }
 
-    function showProgress() {
-        const exercise = document.getElementById('progressSelect').value;
-        const result = getProgressChart(exercise);
-        document.getElementById('output').innerText = result;
+    function showHistory() {
+        const exercise = document.getElementById('historySelect').value;
+        const selectedExercise = user.exercises.find(e => e.name === exercise);
+        const output = document.getElementById('historyOutput');
+        
+        if (selectedExercise && selectedExercise.history.length > 0) {
+            let tableHTML = '<table><tr><th>תאריך</th><th>משקל (ק"ג)</th><th>חזרות</th></tr>';
+            selectedExercise.history.forEach(workout => {
+                tableHTML += `<tr><td>${workout.date}</td><td>${workout.weight}</td><td>${workout.reps}</td></tr>`;
+            });
+            tableHTML += '</table>';
+            output.innerHTML = tableHTML;
+        } else {
+            output.innerHTML = 'אין היסטוריה לתרגיל זה.';
+        }
     }
 
     function showPersonalBests() {
-        const result = getPersonalBests();
-        document.getElementById('output').innerText = result;
+        const output = document.getElementById('personalBestsOutput');
+        let tableHTML = '<table><tr><th>תרגיל</th><th>שיא אישי (ק"ג)</th></tr>';
+        user.exercises.forEach(exercise => {
+            tableHTML += `<tr><td>${exercise.name}</td><td>${exercise.personalBest}</td></tr>`;
+        });
+        tableHTML += '</table>';
+        output.innerHTML = tableHTML;
     }
 
-    // אתחול הדף
+    function showStats() {
+        const output = document.getElementById('statsOutput');
+        let statsHTML = '<h3>סטטיסטיקות כלליות</h3>';
+        statsHTML += `<p>סך הכל אימונים: ${user.exercises.reduce((total, exercise) => total + exercise.history.length, 0)}</p>`;
+        
+        let mostFrequentExercise = user.exercises.reduce((prev, current) => 
+            (prev.history.length > current.history.length) ? prev : current
+        );
+        statsHTML += `<p>תרגיל הכי תדיר: ${mostFrequentExercise.name} (${mostFrequentExercise.history.length} אימונים)</p>`;
+        
+        let totalWeight = user.exercises.reduce((total, exercise) => 
+            total + exercise.history.reduce((sum, workout) => sum + workout.weight, 0), 0
+        );
+        statsHTML += `<p>סך הכל משקל שהורם: ${totalWeight} ק"ג</p>`;
+
+        output.innerHTML = statsHTML;
+    }
+
     window.onload = function() {
         const exerciseSelect = document.getElementById('exerciseSelect');
-        const progressSelect = document.getElementById('progressSelect');
+        const historySelect = document.getElementById('historySelect');
         user.exercises.forEach(exercise => {
             exerciseSelect.add(new Option(exercise.name, exercise.name));
-            progressSelect.add(new Option(exercise.name, exercise.name));
+            historySelect.add(new Option(exercise.name, exercise.name));
         });
+        updateUserDetails();
     }
     </script>
 </body>
